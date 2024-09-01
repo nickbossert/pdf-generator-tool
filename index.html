@@ -12,10 +12,18 @@
             margin: 20px auto;
             text-align: center;
         }
+        .input-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 5px 0;
+        }
         textarea {
             width: 190mm; /* Matches the PDF width minus margins */
             height: 60mm; /* Adjust for desired height */
             resize: none;
+        }
+        button {
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -25,19 +33,24 @@
         <input type="file" id="fileElem" multiple accept="image/*" style="display:none">
         <button onclick="document.getElementById('fileElem').click()">Select Files</button>
         <br><br>
-        <input type="text" id="dateInput" placeholder="Date (MM/DD/YYYY)">
-        <select id="dayInput">
-            <option value="">Select Day of the Week</option>
-            <option value="Sunday">Sunday</option>
-            <option value="Monday">Monday</option>
-            <option value="Tuesday">Tuesday</option>
-            <option value="Wednesday">Wednesday</option>
-            <option value="Thursday">Thursday</option>
-            <option value="Friday">Friday</option>
-            <option value="Saturday">Saturday</option>
-        </select>
-        <textarea id="descriptionInput" placeholder="Description"></textarea>
-        <br><br>
+        <div class="input-box">
+            <input type="text" id="dateInput" placeholder="Date (MM/DD/YYYY)">
+        </div>
+        <div class="input-box">
+            <select id="dayInput">
+                <option value="">Select Day of the Week</option>
+                <option value="Sunday">Sunday</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+            </select>
+        </div>
+        <div class="input-box">
+            <textarea id="descriptionInput" placeholder="Description"></textarea>
+        </div>
         <button id="convertBtn">Convert to PDF</button>
     </div>
 
