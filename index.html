@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to PDF Converter</title>
+    <style>
+        #drop-area {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            width: 300px;
+            margin: 20px auto;
+            text-align: center;
+        }
+        textarea {
+            width: 190mm; /* Matches the PDF width minus margins */
+            height: 60mm; /* Adjust for desired height */
+            resize: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="drop-area">
+        <p>Drag & drop images here</p>
+        <input type="file" id="fileElem" multiple accept="image/*" style="display:none">
+        <button onclick="document.getElementById('fileElem').click()">Select Files</button>
+        <br><br>
+        <input type="text" id="dateInput" placeholder="Date (MM/DD/YYYY)">
+        <select id="dayInput">
+            <option value="">Select Day of the Week</option>
+            <option value="Sunday">Sunday</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+        </select>
+        <textarea id="descriptionInput" placeholder="Description"></textarea>
+        <br><br>
+        <button id="convertBtn">Convert to PDF</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
