@@ -12,8 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set the date input to the current date and day input to the current day
     const today = new Date();
     dateInput.value = today.toISOString().split('T')[0];
-    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    dayInput.value = daysOfWeek[today.getDay()];
+    dayInput.value = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][today.getDay()];
 
     // File drop handling
     dropArea.addEventListener('dragover', event => event.preventDefault());
@@ -39,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function previewImage(file) {
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = event => {
             const imgElement = document.createElement('img');
             imgElement.src = event.target.result;
             imgElement.className = 'preview-image';
@@ -49,49 +48,53 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     convertBtn.addEventListener('click', () => {
-        if (imageFiles.length === 0) {
-            alert('Please upload at least one image.');
-            return;
-        }
-
         const pdf = new jsPDF();
         const margin = 10;
         const pageWidth = pdf.internal.pageSize.getWidth();
         const maxLineWidth = pageWidth - margin * 2;
 
-        // Add text inputs to the first page
-        const dateText = dateInput.value.trim() || "Date not provided";
-        const dayText = dayInput.value || "Day not provided";
-        const descriptionText = descriptionInput.value.trim() || "Description not provided";
+        // Add headers and date/day info
+        pdf.setTextColor(0, 0, 139); // Dark blue color
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(margin, 20, "Date:");
+        pdf.text(margin, 30, "Day:");
 
-        pdf.text(margin, 20, `Date: ${dateText}`);
-        pdf.text(margin, 30, `Day: ${dayText}`);
+        pdf.setTextColor(0, 0, 0); // Black color
+        pdf.setFont('helvetica', 'normal');
+        pdf.text(margin + 30, 20, `${dateInput.value.trim() || "Date not provided"}`);
+        pdf.text(margin + 30, 30, `${dayInput.value || "Day not provided"}`);
 
-        const descriptionLines = descriptionText.split('\n').map(line => pdf.splitTextToSize(line, maxLineWidth));
-        let yOffset = 40;
-        descriptionLines.forEach(lines => {
-            pdf.text(margin, yOffset, lines);
-            yOffset += lines.length * 10;
+        // Add description text
+        let yOffset = 50;
+        const descriptionLines = pdf.splitTextToSize(descriptionInput.value, maxLineWidth);
+        descriptionLines.forEach(line => {
+            pdf.text(margin, yOffset, line);
+            yOffset += 10;
         });
 
-        // Process each image and add them to the PDF
-        let imagesProcessed = 0;
+        // Ensure the first image starts on a new page
+        if (imageFiles.length > 0) pdf.addPage();
 
-        imageFiles.forEach((file, index) => {
+        // Process each image and add them to the PDF
+        processImages(pdf, pageWidth, imageFiles);
+    });
+
+    function processImages(pdf, pageWidth, files) {
+        let imagesProcessed = 0;
+        files.forEach((file, index) => {
             const reader = new FileReader();
             reader.onload = event => {
                 const img = new Image();
                 img.onload = () => {
-                    const imgWidth = pageWidth - 20; // Consider margins
+                    const imgWidth = pageWidth - 20;
                     const imgHeight = (img.height / img.width) * imgWidth;
-
-                    if (index > 0) pdf.addPage(); // Start a new page for each image
                     pdf.addImage(img, 'JPEG', 10, 10, imgWidth, imgHeight);
 
                     imagesProcessed++;
+                    if (index < files.length - 1) pdf.addPage();
 
                     // Save PDF only after all images have been processed
-                    if (imagesProcessed === imageFiles.length) {
+                    if (imagesProcessed === files.length) {
                         pdf.save('images.pdf');
                     }
                 };
@@ -99,5 +102,5 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             reader.readAsDataURL(file);
         });
-    });
+    }
 });
