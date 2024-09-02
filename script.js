@@ -73,34 +73,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Ensure the first image starts on a new page
-        if (imageFiles.length > 0) pdf.addPage();
-
-        // Process each image and add them to the PDF
-        processImages(pdf, pageWidth, imageFiles);
+        if (imageFiles.length > 0) {
+            pdf.addPage();
+            processImagesSequentially(pdf, pageWidth, imageFiles);
+        } else {
+            pdf.save('images.pdf');
+        }
     });
 
-    function processImages(pdf, pageWidth, files) {
-        let imagesProcessed = 0;
-        files.forEach((file, index) => {
-            const reader = new FileReader();
-            reader.onload = event => {
-                const img = new Image();
-                img.onload = () => {
-                    const imgWidth = pageWidth - 20;
-                    const imgHeight = (img.height / img.width) * imgWidth;
-                    pdf.addImage(img, 'JPEG', 10, 10, imgWidth, imgHeight);
+    function processImagesSequentially(pdf, pageWidth, files, index = 0) {
+        if (index >= files.length) {
+            pdf.save('images.pdf');
+            return;
+        }
 
-                    imagesProcessed++;
-                    if (index < files.length - 1) pdf.addPage();
+        const reader = new FileReader();
+        reader.onload = event => {
+            const img = new Image();
+            img.onload = () => {
+                const imgWidth = pageWidth - 20;
+                const imgHeight = (img.height / img.width) * imgWidth;
+                pdf.addImage(img, 'JPEG', 10, 10, imgWidth, imgHeight);
 
-                    // Save PDF only after all images have been processed
-                    if (imagesProcessed === files.length) {
-                        pdf.save('images.pdf');
-                    }
-                };
-                img.src = event.target.result;
+                if (index < files.length - 1) pdf.addPage();
+                processImagesSequentially(pdf, pageWidth, files, index + 1);
             };
-            reader.readAsDataURL(file);
-        });
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(files[index]);
     }
 });
